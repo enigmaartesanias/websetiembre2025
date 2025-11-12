@@ -1,15 +1,24 @@
+// src/components/SimpleImageHero.jsx
 
-import imagenPrincipal from "../../assets/images/principal.jpg";
+import video from '../../assets/images/video.mp4';
 
 const SimpleImageHero = () => {
   return (
-    <div className="w-full min-h-[500px] bg-white flex items-center justify-center">
-      <img
-        src={imagenPrincipal}
-        alt="Imagen principal"
-        className="w-full h-auto max-h-[80vh] object-cover"
-        style={{ maxHeight: "80vh" }}
+    <div className="relative w-full min-h-[500px] flex items-center justify-center overflow-hidden">
+      <video
+        className="absolute top-2 md:top-0 left-0 w-full h-full object-cover filter sepia"
+        src={video}
+        autoPlay
+        loop
+        muted
+        playsInline // Es importante para móviles
       />
+      <div className="relative z-10 text-black text-center p-20">
+        {/* Aquí puedes agregar un texto o el logo encima del video */}
+        <h1 className="text-1xl md:text-6xl drop-shadow-lg">
+          Enigma Artesanías y Accesorios
+        </h1>
+      </div>
     </div>
   );
 };

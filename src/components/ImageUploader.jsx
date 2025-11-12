@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
-import imageCompression from 'browser-image-compression'; // Importa la librería de compresión
+import imageCompression from 'browser-image-compression';
 
 const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
     const [uploading, setUploading] = useState(false);
-    const [imageFile, setImageFile] = useState(null); // Archivo original seleccionado
-    const [compressedFile, setCompressedFile] = useState(null); // Archivo después de la compresión y canvas processing
+    const [imageFile, setImageFile] = useState(null);
+    const [compressedFile, setCompressedFile] = useState(null);
     const [uploadError, setUploadError] = useState(null);
-    const [processing, setProcessing] = useState(false); // Estado para indicar que se está procesando (compresión + canvas)
+    const [processing, setProcessing] = useState(false);
 
-    // Opciones de compresión inicial (solo por tamaño, las dimensiones las maneja Canvas)
+    // Opciones de compresión inicial
     const compressionOptions = {
         maxSizeMB: 0.3, // Máximo 300 KB (0.3 MB)
-        useWebWorker: true, // Usa Web Workers para no bloquear la UI
+        useWebWorker: true,
         maxIteration: 10,
     };
 
@@ -33,10 +33,10 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
         setImageFile(file);
         setUploadError(null);
         setCompressedFile(null);
-        setProcessing(true); // Indicar que el procesamiento ha comenzado
+        setProcessing(true);
 
         try {
-            // Paso 1: Comprimir la imagen para reducir su tamaño
+            // Paso 1: Comprimir el archivo para reducir su tamaño (peso)
             const compressedBlob = await imageCompression(file, compressionOptions);
 
             // Paso 2: Procesar la imagen con Canvas para asegurar 800x600 y recortar
@@ -45,13 +45,13 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
             setCompressedFile(processedFile);
             console.log('Imagen original:', (file.size / 1024).toFixed(2), 'KB');
             console.log('Imagen procesada (final):', (processedFile.size / 1024).toFixed(2), 'KB');
-
         } catch (err) {
             console.error('Error durante el procesamiento de la imagen:', err.message);
-            setUploadError(`Error al procesar la imagen: ${err.message}`);
+            // Mostrar un error específico si la compresión falla
+            setUploadError(`Error al procesar la imagen. Asegúrate de que es un archivo de imagen válido. Detalle: ${err.message}`);
             setCompressedFile(null);
         } finally {
-            setProcessing(false); // Indicar que el procesamiento ha terminado
+            setProcessing(false);
         }
     };
 
@@ -64,48 +64,34 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-
                     canvas.width = targetWidth;
                     canvas.height = targetHeight;
-
-                    // Calcular las dimensiones de origen y destino para el recorte
                     const imgAspectRatio = img.width / img.height;
                     const canvasAspectRatio = targetWidth / targetHeight;
-
-                    let sx, sy, sWidth, sHeight; // Source (recorte de la imagen original)
-                    let dx, dy, dWidth, dHeight; // Destination (dibujo en el canvas)
-
+                    let sx, sy, sWidth, sHeight;
                     if (imgAspectRatio > canvasAspectRatio) {
-                        // La imagen original es más ancha que el canvas (ej. 16:9 en 4:3)
-                        // Recortar los lados izquierdo/derecho de la imagen original
                         sHeight = img.height;
                         sWidth = sHeight * canvasAspectRatio;
                         sx = (img.width - sWidth) / 2;
                         sy = 0;
                     } else {
-                        // La imagen original es más alta que el canvas (ej. 3:4 en 4:3)
-                        // Recortar la parte superior/inferior de la imagen original
                         sWidth = img.width;
                         sHeight = sWidth / canvasAspectRatio;
                         sx = 0;
                         sy = (img.height - sHeight) / 2;
                     }
-
-                    // Dibujar la parte recortada de la imagen original en todo el canvas
                     ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, targetWidth, targetHeight);
-
-                    // Convertir el canvas a un Blob y luego a un File
                     canvas.toBlob((blob) => {
                         if (blob) {
                             const processedFile = new File([blob], imageBlob.name, {
-                                type: blob.type,
+                                type: 'image/jpeg',
                                 lastModified: Date.now(),
                             });
                             resolve(processedFile);
                         } else {
                             reject(new Error('No se pudo convertir el canvas a Blob.'));
                         }
-                    }, 'image/jpeg', 0.9); // Formato JPEG, calidad 0.9 (ajustable)
+                    }, 'image/jpeg', 0.9);
                 };
                 img.onerror = () => {
                     reject(new Error('No se pudo cargar la imagen para procesamiento Canvas.'));
@@ -118,10 +104,7 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
 
     const uploadImage = async () => {
         if (!compressedFile) {
-            setUploadError('Por favor, selecciona y procesa una imagen válida para subir.');
-            return;
-        }
-        if (uploadError) {
+            setUploadError('Por favor, selecciona una imagen para subir.');
             return;
         }
 
@@ -132,32 +115,35 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
         const filePath = `${uuidv4()}.${fileExtension}`;
 
         try {
-            const { data, error } = await supabase.storage
-                .from(bucketName) // Usa el bucket recibido por props
+            const { error: uploadError } = await supabase.storage
+                .from(bucketName)
                 .upload(filePath, compressedFile, {
                     cacheControl: '3600',
                     upsert: false,
                 });
 
-            if (error) {
-                throw error;
+            if (uploadError) {
+                throw uploadError;
             }
 
-            const { data: publicUrlData } = supabase.storage
+            const { data: { publicUrl }, error: urlError } = supabase.storage
                 .from(bucketName)
                 .getPublicUrl(filePath);
 
-            if (publicUrlData.publicUrl) {
-                console.log('Imagen subida exitosamente:', publicUrlData.publicUrl);
+            if (urlError) {
+                throw urlError;
+            }
+
+            if (publicUrl) {
+                console.log('Imagen subida exitosamente:', publicUrl);
                 if (onUploadSuccess) {
-                    onUploadSuccess(publicUrlData.publicUrl);
+                    onUploadSuccess(publicUrl);
                 }
                 setImageFile(null);
                 setCompressedFile(null);
             } else {
                 throw new Error('No se pudo obtener la URL pública de la imagen.');
             }
-
         } catch (err) {
             console.error('Error al subir la imagen:', err.message);
             setUploadError(`Error al subir la imagen: ${err.message}`);
@@ -179,25 +165,36 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
                 file:text-sm file:font-semibold
                 file:bg-violet-50 file:text-violet-700
                 hover:file:bg-violet-100"
+                disabled={uploading || processing}
             />
             {imageFile && (
                 <p className="text-sm text-gray-600 mb-2">Archivo seleccionado: {imageFile.name}</p>
             )}
             {processing && (
-                <p className="text-blue-500 text-sm mb-2">Procesando imagen (redimensionando y recortando)...</p>
+                <div className="flex items-center text-blue-500 text-sm mb-2">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Procesando imagen...
+                </div>
             )}
             {compressedFile && !processing && (
                 <p className="text-green-600 text-sm mb-2">
-                    Imagen lista para subir. Tamaño: {(compressedFile.size / 1024).toFixed(2)} KB.
+                    Imagen lista para subir. Tamaño final: {(compressedFile.size / 1024).toFixed(2)} KB.
                 </p>
             )}
-            {uploadError && <p className="text-red-500 text-sm mb-4">{uploadError}</p>}
+            {uploadError && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+                    {uploadError}
+                </div>
+            )}
             <button
                 onClick={uploadImage}
-                disabled={uploading || processing || !compressedFile || uploadError}
+                disabled={uploading || processing || !compressedFile}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
             >
-                {uploading ? 'Subiendo...' : (processing ? 'Procesando...' : 'Subir Imagen')}
+                {uploading ? 'Subiendo...' : 'Subir Imagen'}
             </button>
         </div>
     );

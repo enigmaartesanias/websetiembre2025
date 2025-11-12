@@ -20,7 +20,7 @@ const Hero3 = () => {
 
           {/* Columna del texto y contenido */}
           {/* En móvil: ocupa 1 columna y se centra. En md/lg: ocupa 2 de 3 o 3 de 4 columnas, y texto a la izquierda. */}
-          <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center text-center md:text-left">
+          <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center text-left md:text-left">
             <h2 className="text-2xl sm:text-2xl lg:text-3xl font-normal text-gray-900 mb-4">
               La Técnica
             </h2>

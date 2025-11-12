@@ -29,7 +29,7 @@ import Footer from './components/Footer';
 
 import PublicCarousel from './components/PublicCarousel';
 import ProductoDetalle from './components/ProductoDetalle';
-
+import Tienda from './components/Tienda'; // ✅ Importa el nuevo componente Tienda
 
 // Autenticación
 import SignUp from './components/SignUp';
@@ -40,8 +40,9 @@ import PrivateRoute from './components/PrivateRoute';
 // Panel de administración
 import AdminPanel from './components/AdminPanel';
 import CarouselAdmin from './components/CarouselAdmin';
-import CategoriaAdmin from './components/CategoriaAdmin';     // ✅ Este sí existe (si lo tienes para categorías)
-import ProductoAdmin from './components/ProductoAdmin';       // ✅ El que yo te di, completo
+import CategoriaAdmin from './components/CategoriaAdmin';
+import ProductoAdmin from './components/ProductoAdmin';
+import StockAdmin from './components/StockAdmin'; 
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
           <Route path="/videoshorts" element={<VideoShorts />} />
           <Route path="/carrusel" element={<PublicCarousel />} />
           <Route path="/producto/:id" element={<ProductoDetalle />} />
+          <Route path="/tienda" element={<Tienda />} /> {/* ✅ Nueva ruta para la tienda */}
 
           {/* Rutas de autenticación */}
           <Route path="/signup" element={<SignUp />} />
@@ -96,7 +98,6 @@ function App() {
             }
           />
 
-          {/* ✅ Esta ruta es para administrar CATEGORÍAS (solo si tienes ese componente) */}
           <Route
             path="/admin/categoria"
             element={
@@ -106,12 +107,20 @@ function App() {
             }
           />
 
-          {/* ✅ Esta ruta es para administrar PRODUCTOS (usa el mejorado) */}
           <Route
             path="/admin/productos"
             element={
               <PrivateRoute>
                 <ProductoAdmin />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/admin/stock"
+            element={
+              <PrivateRoute>
+                <StockAdmin />
               </PrivateRoute>
             }
           />

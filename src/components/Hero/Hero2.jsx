@@ -19,13 +19,13 @@ const Hero2 = () => {
 
           {/* Columna del texto y contenido */}
           {/* En móvil: w-full, en md: ocupa 2 de 3 columnas, en lg: ocupa 3 de 4 columnas */}
-          <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center text-center md:text-left">
+          <div className="w-full md:col-span-2 lg:col-span-3 flex flex-col justify-center text-left md:text-left">
             <h2 className="text-2xl sm:text-2xl lg:text-3xl font-normal text-gray-900 mb-4">
               Andru Donalds y el Arte de Enigma
             </h2>
             <p className="text-left text-base md:text-lg sm:text-lg text-gray-700 mb-6 leading-relaxed">
               Una colaboración que une música y orfebrería. Andru Donalds, solista y voz principal de Enigma (proyecto musical - M.Cretu), luce nuestras joyas hechas a mano: anillos con piedras naturales, cuarzos y un dije único que refleja estilo, fuerza y esencia artesanal.
-              Fotografía: Emillio Gaziyants
+              
             </p>
             {/* Si tienes más contenido aquí, también se expandirá con el texto */}
           </div>

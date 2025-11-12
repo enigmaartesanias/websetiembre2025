@@ -26,7 +26,7 @@ const Videoseccion = () => {
           </div>
 
           {/* Columna del texto y contenido */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+          <div className="w-full md:w-1/2 flex flex-col justify-center text-left md:text-left">
               <h2 className="text-2xl sm:text-2xl lg:text-3xl font-normal text-gray-900 mb-4">
               Descubre la Magia Detrás de Cada Pieza
             </h2>
@@ -36,7 +36,7 @@ const Videoseccion = () => {
               desde la selección de las piedras naturales y cuarzos hasta los toques finales
               que dan vida a cada anillo, dije y accesorio.
               <br /><br />
-              Cada diseño de Enigma es una obra de arte forjada con pasión y dedicación.
+              
             </p>
             {/* Puedes añadir un botón de CTA aquí si lo deseas, por ejemplo: */}
             {/* <div className="mt-6">

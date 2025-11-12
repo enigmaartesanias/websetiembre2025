@@ -25,7 +25,7 @@ const Contacto = () => {
             Enigma Artesanías y Accesorios
           </h2>
           <p className="text-gray-600 text-center">
-            Dirección: Jr. Madre Selva 544 Tda. 01 - Urb. Santa Isabel - Carabayllo<br />
+            Dirección: Jr. Madre Selva 544 Tda. 02 - Urb. Santa Isabel - Carabayllo<br />
             Lima - Perú<br />
             Whatsapp: +51 960282376<br />
             Email: artesaniasenigma@gmail.com

@@ -21,7 +21,7 @@ const CategoriaShowcase = () => {
           .select('*')
           .eq('activo', true)
           .eq('is_novedoso', true)
-          .order('orden', { ascending: true });
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
         setProductos(data || []);
@@ -45,7 +45,7 @@ const CategoriaShowcase = () => {
     draggable: true,
     swipe: true,
     dots: true,
-    dotsClass: "slick-dots-custom", // Clase personalizada
+    dotsClass: "slick-dots-custom",
     responsive: [
       {
         breakpoint: 768,
@@ -106,33 +106,68 @@ const CategoriaShowcase = () => {
     <section className="py-10 bg-gray-50">
       <div className="container mx-auto px-3">
         {/* Título del showcase */}
-        <div className="text-left mb-2">
-          <h2 className="text-xl  text-gray-800">
+        <div className="text-left mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">
             Creaciones del Momento
           </h2>
         </div>
 
         {/* Carrusel */}
+        {/* Estilos locales para los dots del carrusel */}
+        <style>{`
+          .slick-dots-custom {
+            margin-top: 0.5rem;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+          }
+          .slick-dots-custom li {
+            margin: 0 4px;
+          }
+          .slick-dots-custom li button {
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+            padding: 0 !important;
+            background: #cbd5e1 !important; /* gray-300 */
+            border: none !important;
+            box-shadow: none !important;
+          }
+          .slick-dots-custom li.slick-active button {
+            background: #1f2937 !important; /* gray-800 */
+          }
+        `}</style>
         <div className="overflow-hidden">
           <Slider {...settings}>
-            {productos.map((producto) => (
-              <div key={producto.id} className="p-2">
-                <Link to={`/producto/${producto.id}`} className="block ">
-                  <img
-                    src={producto.imagen_principal_url}
-                    alt={producto.titulo}
-                    className="w-full h-56 object-cover aspect-square shadow-md"
-                    style={{ objectFit: 'cover', width: '100%', height: '100%', aspectRatio: '1 / 1' }}
-                  />
-                  <div className="mt-4 text-ms text-gray-700 text-left">
-                    {producto.titulo}
-                  </div>
-                  <div className="mt-2 text-base text-gray-600 text-left">
-                    S/. {producto.precio?.toFixed(2)} PEN
-                  </div>
-                </Link>
-              </div>
-            ))}
+            {productos.map((producto) => {
+              // Lógica para formatear la fecha
+              const date = new Date(producto.created_at);
+              const month = date.toLocaleString('es-ES', { month: 'short' });
+              const year = date.getFullYear();
+              const formattedDate = `${month.charAt(0).toUpperCase() + month.slice(1)}. ${year}`;
+
+              return (
+                <div key={producto.id} className="px-0 md:px-0.5">
+                  <Link to={`/producto/${producto.id}`} className="block pb-4">
+                    <img
+                      src={producto.imagen_principal_url}
+                      alt={producto.titulo}
+                      className="w-full h-[380px] md:h-[460px] object-cover shadow-md rounded"
+                    />
+                    <div className="mt-3 text-sm text-black font-semibold text-left mb-2">
+                      {producto.titulo}
+                    </div>
+                    <div className="mt-1 text-sm text-black text-left mb-2">
+                      S/ {producto.precio?.toFixed(2)} PEN
+                    </div>
+                    {/* Nuevo div para la fecha (más pequeño) */}
+                    <div className="text-xs text-black text-opacity-70 text-left mt-1">
+                      {formattedDate}
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </Slider>
         </div>
       </div>

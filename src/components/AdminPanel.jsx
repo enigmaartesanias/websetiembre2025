@@ -71,6 +71,21 @@ const AdminPanel = () => {
             <p className="text-gray-600">Administra tus productos: imágenes, precios, materiales y más.</p>
           </Link>
 
+          {/* Gestión de Stock */}
+<Link
+  to="/admin/stock" 
+  className="block p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-center"
+>
+  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c1.657 0 3 1.343 3 3v5H9v-5c0-1.657 1.343-3 3-3z"/>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12h-4V8a7 7 0 00-14 0v4H3a1 1 0 00-1 1v6a1 1 0 001 1h18a1 1 0 001-1v-6a1 1 0 00-1-1z"/>
+    </svg>
+  </div>
+  <h2 className="text-xl font-semibold text-gray-800 mb-2">Gestión de Stock</h2>
+  <p className="text-gray-600">Administra el inventario de la tienda.</p>
+</Link>
+
         </div>
 
         {/* Botón de cierre de sesión */}
