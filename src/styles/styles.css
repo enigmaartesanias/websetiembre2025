@@ -122,3 +122,22 @@ html {
 .slick-dots-custom li button:before {
   content: none !important; /* Elimina el contenido por defecto */
 }
+
+/* Estilos para el contenedor del slide del carrusel en ProductoDetalle */
+.carousel-slide-container {
+  height: 300px; /* Altura por defecto para móviles */
+}
+
+/* Media query para tablets y pantallas más grandes */
+@media (min-width: 640px) { /* Coincide con el breakpoint 'sm' de Tailwind */
+  .carousel-slide-container {
+    height: 550px;
+  }
+}
+
+/* Media query para desktops y pantallas más grandes */
+@media (min-width: 768px) { /* Coincide con el breakpoint 'md' de Tailwind */
+  .carousel-slide-container {
+    height: 650px;
+  }
+}

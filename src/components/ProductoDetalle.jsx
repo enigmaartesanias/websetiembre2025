@@ -193,16 +193,16 @@ const ProductoDetalle = () => {
                 </Link>
             </div>
 
-            <div className="container mx-auto p-8 max-w-3xl bg-white shadow-xl rounded-lg">
+            <div className="container mx-auto p-8 max-w-3xl bg-white shadow-xl rounded-lg" >
                 {/* Galería */}
-                <div className="mb-6">
+                <div className="mb-6 producto-detalle-galeria">
                     <Slider {...settings} ref={slider => (sliderRef = slider)}>
                         {imageUrls.map((url, index) => (
-                            <div key={index} className="relative">
+                            <div key={index} className="relative carousel-slide-container">
                                 <img
                                     src={url}
                                     alt={`Imagen ${index + 1}`}
-                                    className="w-full h-[500px] sm:h-[600px] md:h-[700px] object-contain bg-white rounded cursor-pointer"
+                                    className="w-full h-full object-cover bg-white rounded cursor-pointer"
                                     onClick={() => openModal(url)}
                                 />
                                 <div

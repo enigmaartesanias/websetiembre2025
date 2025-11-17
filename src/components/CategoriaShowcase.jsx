@@ -115,6 +115,9 @@ const CategoriaShowcase = () => {
         {/* Carrusel */}
         {/* Estilos locales para los dots del carrusel */}
         <style>{`
+          .slick-slide {
+            height: auto !important;
+          }
           .slick-dots-custom {
             margin-top: 0.5rem;
             display: flex !important;
@@ -149,11 +152,14 @@ const CategoriaShowcase = () => {
               return (
                 <div key={producto.id} className="px-0 md:px-0.5">
                   <Link to={`/producto/${producto.id}`} className="block pb-4">
-                    <img
-                      src={producto.imagen_principal_url}
-                      alt={producto.titulo}
-                      className="w-full h-[380px] md:h-[460px] object-cover shadow-md rounded"
-                    />
+                    {/* Contenedor de producto */}
+                    <div className="w-full h-[400px] bg-black rounded overflow-hidden flex items-center justify-center" style={{ height: '250px' }}>
+                      <img
+                        src={producto.imagen_principal_url}
+                        alt={producto.titulo}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <div className="mt-3 text-sm text-black font-semibold text-left mb-2">
                       {producto.titulo}
                     </div>

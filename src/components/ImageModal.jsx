@@ -122,7 +122,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, productUrl }) => {
                 <img
                   src={imageUrl}
                   alt="Imagen ampliada del producto"
-                  className="w-full h-auto max-h-[60vh] sm:max-h-[70vh] md:max-h-[80vh] object-contain"
+                  className="w-full h-auto max-h-[70vh] sm:max-h-[80vh] md:max-h-[90vh] object-contain"
                 />
               </TransformComponent>
 
