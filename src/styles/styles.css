@@ -125,7 +125,7 @@ html {
 
 /* Estilos para el contenedor del slide del carrusel en ProductoDetalle */
 .carousel-slide-container {
-  height: 300px; /* Altura por defecto para móviles */
+  height: 400px; /* Altura por defecto para móviles */
 }
 
 /* Media query para tablets y pantallas más grandes */

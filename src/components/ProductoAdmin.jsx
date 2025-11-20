@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import ImageUploader from "./ImageUploader";
-import { useNavigate } from 'react-router-dom'; // Para redirigir si no hay sesión
+import { useNavigate } from 'react-router-dom';
 
 const ProductoAdmin = () => {
   const [productos, setProductos] = useState([]);
@@ -108,6 +108,11 @@ const ProductoAdmin = () => {
   };
 
   const handleImageUpload = (field, url) => {
+    // Validar que la URL sea válida
+    if (!url || typeof url !== 'string') {
+      setError("Error: URL de imagen inválida");
+      return;
+    }
     setFormData((prev) => ({ ...prev, [field]: url }));
   };
 
@@ -434,6 +439,10 @@ const ProductoAdmin = () => {
 
         <div className="mt-6">
           <h4 className="text-lg font-semibold mb-4">Imágenes</h4>
+          <p className="text-sm text-gray-600 mb-4">
+            💡 Recomendación: Sube imágenes en formato vertical (alto mayor que ancho) 
+            para mejor visualización en ProductoDetalle. Tamaño sugerido: 600x800px o mayor.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {["imagen_principal_url", "imagen2_url", "imagen3_url"].map(
               (field, idx) => (
@@ -457,7 +466,7 @@ const ProductoAdmin = () => {
                     <img
                       src={formData[field]}
                       alt={field}
-                      className="w-full h-32 object-cover rounded mt-2"
+                      className="w-full h-48 object-contain rounded mt-2 bg-gray-100"
                     />
                   )}
                 </div>

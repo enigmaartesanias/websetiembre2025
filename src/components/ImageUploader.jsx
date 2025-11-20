@@ -12,14 +12,14 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
 
     // Opciones de compresión inicial
     const compressionOptions = {
-        maxSizeMB: 0.3, // Máximo 300 KB (0.3 MB)
+        maxSizeMB: 1, // Máximo 1 MB
         useWebWorker: true,
         maxIteration: 10,
     };
 
-    // Dimensiones de salida deseadas
-    const TARGET_WIDTH = 800;
-    const TARGET_HEIGHT = 600;
+    // Dimensiones máximas (mantiene proporciones)
+    const MAX_WIDTH = 1200;
+    const MAX_HEIGHT = 1200;
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
@@ -39,15 +39,14 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
             // Paso 1: Comprimir el archivo para reducir su tamaño (peso)
             const compressedBlob = await imageCompression(file, compressionOptions);
 
-            // Paso 2: Procesar la imagen con Canvas para asegurar 800x600 y recortar
-            const processedFile = await processImageWithCanvas(compressedBlob, TARGET_WIDTH, TARGET_HEIGHT);
+            // Paso 2: Procesar la imagen manteniendo proporciones
+            const processedFile = await processImageWithCanvas(compressedBlob, MAX_WIDTH, MAX_HEIGHT);
 
             setCompressedFile(processedFile);
             console.log('Imagen original:', (file.size / 1024).toFixed(2), 'KB');
             console.log('Imagen procesada (final):', (processedFile.size / 1024).toFixed(2), 'KB');
         } catch (err) {
             console.error('Error durante el procesamiento de la imagen:', err.message);
-            // Mostrar un error específico si la compresión falla
             setUploadError(`Error al procesar la imagen. Asegúrate de que es un archivo de imagen válido. Detalle: ${err.message}`);
             setCompressedFile(null);
         } finally {
@@ -55,32 +54,35 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
         }
     };
 
-    // Función para procesar la imagen con Canvas (redimensiona y recorta)
-    const processImageWithCanvas = (imageBlob, targetWidth, targetHeight) => {
+    // Función para procesar la imagen con Canvas (redimensiona SIN recortar)
+    const processImageWithCanvas = (imageBlob, maxWidth, maxHeight) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
                 img.onload = () => {
+                    // Calcular nuevas dimensiones manteniendo proporciones
+                    let newWidth = img.width;
+                    let newHeight = img.height;
+
+                    if (newWidth > maxWidth) {
+                        newHeight = (newHeight * maxWidth) / newWidth;
+                        newWidth = maxWidth;
+                    }
+
+                    if (newHeight > maxHeight) {
+                        newWidth = (newWidth * maxHeight) / newHeight;
+                        newHeight = maxHeight;
+                    }
+
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
-                    const imgAspectRatio = img.width / img.height;
-                    const canvasAspectRatio = targetWidth / targetHeight;
-                    let sx, sy, sWidth, sHeight;
-                    if (imgAspectRatio > canvasAspectRatio) {
-                        sHeight = img.height;
-                        sWidth = sHeight * canvasAspectRatio;
-                        sx = (img.width - sWidth) / 2;
-                        sy = 0;
-                    } else {
-                        sWidth = img.width;
-                        sHeight = sWidth / canvasAspectRatio;
-                        sx = 0;
-                        sy = (img.height - sHeight) / 2;
-                    }
-                    ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, targetWidth, targetHeight);
+                    canvas.width = newWidth;
+                    canvas.height = newHeight;
+
+                    // Dibujar sin recortar
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
                     canvas.toBlob((blob) => {
                         if (blob) {
                             const processedFile = new File([blob], imageBlob.name, {
@@ -91,7 +93,7 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
                         } else {
                             reject(new Error('No se pudo convertir el canvas a Blob.'));
                         }
-                    }, 'image/jpeg', 0.9);
+                    }, 'image/jpeg', 0.95);
                 };
                 img.onerror = () => {
                     reject(new Error('No se pudo cargar la imagen para procesamiento Canvas.'));
@@ -155,6 +157,10 @@ const ImageUploader = ({ onUploadSuccess, bucketName = 'carousel-images' }) => {
     return (
         <div className="border p-4 rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-3">Subir Nueva Imagen</h3>
+            <p className="text-xs text-gray-600 mb-3">
+                💡 Las imágenes se redimensionarán manteniendo sus proporciones. 
+                Máximo: 1200x1200px. Se recomienda formato vertical para mejor visualización.
+            </p>
             <input
                 type="file"
                 accept="image/*"

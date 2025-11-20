@@ -9,10 +9,9 @@ const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
-  const toggleDropdown = (jewelryType) => {
-    setActiveDropdown(activeDropdown === jewelryType ? null : jewelryType);
-  };
-
+    const toggleDropdown = (material) => {
+      setActiveDropdown(activeDropdown === material ? null : material);
+    };
   // Función para compartir la página
   const handleShare = () => {
     if (navigator.share) {
@@ -63,30 +62,27 @@ const Header = () => {
     };
   }, [menuOpen, activeDropdown]);
 
-  const jewelryTypes = ['Anillos', 'Pulseras', 'Collares', 'Aretes'];
-  const materialsByJewelryType = {
-    Anillos: [
-      { name: 'Plata', path: '/plataanillos' },
-      { name: 'Alpaca', path: '/alpacaanillos' },
-      { name: 'Cobre', path: '/cobreanillos' },
-    ],
-    Pulseras: [
-      { name: 'Plata', path: '/platapulseras' },
-      { name: 'Alpaca', path: '/alpacapulseras' },
-      { name: 'Cobre', path: '/cobrepulseras' },
-    ],
-    Collares: [
-      { name: 'Plata', path: '/platacollares' },
-      { name: 'Alpaca', path: '/alpacacollares' },
-      { name: 'Cobre', path: '/cobrecollares' },
-    ],
-    Aretes: [
-      { name: 'Plata', path: '/plataaretes' },
-      { name: 'Alpaca', path: '/alpacaaretes' },
-      { name: 'Cobre', path: '/cobrearetes' },
-    ],
-  };
-
+    const materials = ['Plata', 'Alpaca', 'Cobre'];
+    const jewelryByMaterial = {
+      Plata: [
+        { name: 'Anillos', path: '/plataanillos' },
+        { name: 'Pulseras', path: '/platapulseras' },
+        { name: 'Collares', path: '/platacollares' },
+        { name: 'Aretes', path: '/plataaretes' },
+      ],
+      Alpaca: [
+        { name: 'Anillos', path: '/alpacaanillos' },
+        { name: 'Pulseras', path: '/alpacapulseras' },
+        { name: 'Collares', path: '/alpacacollares' },
+        { name: 'Aretes', path: '/alpacaaretes' },
+      ],
+      Cobre: [
+        { name: 'Anillos', path: '/cobreanillos' },
+        { name: 'Pulseras', path: '/cobrepulseras' },
+        { name: 'Collares', path: '/cobrecollares' },
+        { name: 'Aretes', path: '/cobrearetes' },
+      ],
+    };
   return (
     <header
       id="main-header"
@@ -161,42 +157,41 @@ const Header = () => {
               </Link>
             </li>
 
-            {jewelryTypes.map((jewelryType) => (
-              <li key={jewelryType} className="group has-submenu md:relative">
-                <button
-                  className="flex items-center justify-between w-full px-4 py-2 hover:text-gray-500 text-left md:inline md:w-auto"
-                  onClick={() => toggleDropdown(jewelryType)}
-                >
-                  {jewelryType}
-                  <span className="ml-2 md:hidden">
-                    {activeDropdown === jewelryType ? 'v' : '>'}
-                  </span>
-                </button>
-                <ul
-                  className={`${
-                    activeDropdown === jewelryType
-                      ? 'block md:absolute bg-gray-200 md:min-w-[160px] md:mt-2 shadow-lg z-50'
-                      : 'hidden'
-                  }`}
-                >
-                  {materialsByJewelryType[jewelryType].map((material) => (
-                    <li key={`${jewelryType}-${material.name}`}>
-                      <Link
-                        to={material.path}
-                        className="block px-4 py-2 hover:bg-gray-200"
-                        onClick={() => {
-                          setActiveDropdown(null);
-                          if (window.innerWidth < 768) toggleMenu();
-                        }}
-                      >
-                        {material.name}
-                      </Link>
-                  </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-
+                        {materials.map((material) => (
+                          <li key={material} className="group has-submenu md:relative">
+                            <button
+                              className="flex items-center justify-between w-full px-4 py-2 hover:text-gray-500 text-left md:inline md:w-auto"
+                              onClick={() => toggleDropdown(material)}
+                            >
+                              {material}
+                              <span className="ml-2 md:hidden">
+                                {activeDropdown === material ? 'v' : '>'}
+                              </span>
+                            </button>
+                            <ul
+                              className={`${
+                                activeDropdown === material
+                                  ? 'block md:absolute bg-gray-200 md:min-w-[160px] md:mt-2 shadow-lg z-50'
+                                  : 'hidden'
+                              }`}
+                            >
+                              {jewelryByMaterial[material].map((jewelry) => (
+                                <li key={`${material}-${jewelry.name}`}>
+                                  <Link
+                                    to={jewelry.path}
+                                    className="block px-4 py-2 hover:bg-gray-200"
+                                    onClick={() => {
+                                      setActiveDropdown(null);
+                                      if (window.innerWidth < 768) toggleMenu();
+                                    }}
+                                  >
+                                    {jewelry.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        ))}
             <li>
               <Link
                 to="/personalizado"
